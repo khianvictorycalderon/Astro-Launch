@@ -45,10 +45,17 @@ let ship = new lib.ufo;
  * If the player hits any asteroid, game over, removes all the asteroid and the ufo ship, and shows the game over screen in the middle of the screen with score shown, and when play again was clicked, then go to game page again
  */
 
+// ===================== UTILITY FUNCTIONS =====================
+function placeHomeScreen() {
+    homeScreen.x = stage.canvas.width / 2;
+    homeScreen.y = stage.canvas.height / 2;
+    stage.addChild(homeScreen);
+}
 
 // ===================== MECHANICS FUNCTIONS =====================
 function homePage() {
 	// Home page (at the beginning of the game)
+    placeHomeScreen();
 }
 
 function gamePage() {
