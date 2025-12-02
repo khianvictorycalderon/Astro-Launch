@@ -110,7 +110,7 @@ function gamePage() {
             ship.y -= 5; // speed
         }
 
-        if (moveDown && ship.y + ufoHeight / 2 < 600) {
+        if (moveDown && ship.y + ufoHeight / 2 < stage.canvas.height - stage.canvas.height / 4) {
             ship.y += 5; // speed
         }
 
