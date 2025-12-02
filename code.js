@@ -50,7 +50,7 @@ function placeHomeScreen() {
     stage.addChild(homeScreen);
 }
 
-// ===================== MECHANICS FUNCTIONS =====================
+// ===================== PAGE FUNCTIONS =====================
 function homePage() {
 	// Home page (at the beginning of the game)
     placeHomeScreen();
