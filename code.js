@@ -53,6 +53,7 @@ function placeHomeScreen() {
 // ===================== PAGE FUNCTIONS =====================
 function homePage() {
     placeHomeScreen();
+    stage.removeChild(ship);
     homeScreen.playButton.addEventListener("click", () => {
         gamePage();
     });
@@ -62,7 +63,7 @@ function gamePage() {
     stage.removeChild(homeScreen);
     homeScreen.playButton.removeEventListener("click");
 
-    // Initialize the game
+    // UFO position
     ship.x = stage.canvas.width / 6;
     ship.y = stage.canvas.height / 2.6125;
     ship.scale = 0.08;
@@ -70,7 +71,7 @@ function gamePage() {
 }
 
 function overPage() {
-	// Over page
+    stage.removeChild(ship);
 }
 
 // Call the initial page
