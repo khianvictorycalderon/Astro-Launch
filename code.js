@@ -65,9 +65,57 @@ function gamePage() {
 
     // UFO position
     ship.x = stage.canvas.width / 6;
-    ship.y = stage.canvas.height / 2.6125;
+    ship.y = stage.canvas.height / 2;
     ship.scale = 0.08;
     stage.addChild(ship);
+
+    // ================= KEYBOARD CONTROLS =================
+    let moveUp = false;
+    let moveDown = false;
+
+    function keyDownHandler(e) {
+        switch (e.code) {
+            case "ArrowUp":
+            case "KeyW":
+                moveUp = true;
+                break;
+            case "ArrowDown":
+            case "KeyS":
+                moveDown = true;
+                break;
+        }
+    }
+
+    function keyUpHandler(e) {
+        switch (e.code) {
+            case "ArrowUp":
+            case "KeyW":
+                moveUp = false;
+                break;
+            case "ArrowDown":
+            case "KeyS":
+                moveDown = false;
+                break;
+        }
+    }
+
+    window.addEventListener("keydown", keyDownHandler);
+    window.addEventListener("keyup", keyUpHandler);
+
+    // ================= UFO MOVEMENT TICK =================
+    createjs.Ticker.addEventListener("tick", () => {
+        const ufoHeight = 100 * ship.scale; // manually set your UFO's pixel height, adjust if needed
+
+        if (moveUp && ship.y - ufoHeight / 2 > 0) {
+            ship.y -= 5; // speed
+        }
+
+        if (moveDown && ship.y + ufoHeight / 2 < 600) {
+            ship.y += 5; // speed
+        }
+
+        stage.update();
+    });
 }
 
 function overPage() {
