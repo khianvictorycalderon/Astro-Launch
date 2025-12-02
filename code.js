@@ -1,7 +1,5 @@
 // ADOBE ANIMATE HTML5 GAME
 // by Khian Victory D. Calderon and Rafael Metran
-// 3 Pages
-var page = "home";
 
 // ===================== DEFINING LINKAGES =====================
 
@@ -47,8 +45,8 @@ let ship = new lib.ufo;
 
 // ===================== UTILITY FUNCTIONS =====================
 function placeHomeScreen() {
-    homeScreen.x = stage.canvas.width / 2;
-    homeScreen.y = stage.canvas.height / 2;
+    homeScreen.x = stage.canvas.width / 2.6125;
+    homeScreen.y = stage.canvas.height / 2.6125;
     stage.addChild(homeScreen);
 }
 
@@ -56,25 +54,19 @@ function placeHomeScreen() {
 function homePage() {
 	// Home page (at the beginning of the game)
     placeHomeScreen();
+    homeScreen.playButton.addEventListener("click", () => {
+        gamePage();
+    });
 }
 
 function gamePage() {
 	// Game page
+    stage.removeChild(homeScreen);
 }
 
 function overPage() {
 	// Over page
 }
 
-// ===================== PAGE MANAGEMENT =====================
-switch (page) {
-	case "home":
-		homePage();
-		break;
-	case "game":
-		gamePage();
-		break;
-	case "over":
-		overPage();
-		break;
-}
+// Call the initial page
+homePage();
