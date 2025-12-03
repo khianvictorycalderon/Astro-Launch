@@ -127,6 +127,8 @@ function gamePage() {
     let asteroidSpeed = 3; // starting speed
     let moveUp = false;
     let moveDown = false;
+    let moveLeft = false;
+    let moveRight = false;
 
     // ================== UFO SETUP ==================
     ship.x = stage.canvas.width / 6;
@@ -155,6 +157,14 @@ function gamePage() {
             case "KeyS":
                 moveDown = true;
                 break;
+            case "ArrowLeft":
+            case "KeyA":
+                moveLeft = true;
+                break;
+            case "ArrowRight":
+            case "KeyD":
+                moveRight = true;
+                break;
         }
     }
 
@@ -167,6 +177,14 @@ function gamePage() {
             case "ArrowDown":
             case "KeyS":
                 moveDown = false;
+                break;
+            case "ArrowLeft":
+            case "KeyA":
+                moveLeft = false;
+                break;
+            case "ArrowRight":
+            case "KeyD":
+                moveRight = false;
                 break;
         }
     }
@@ -203,9 +221,17 @@ function gamePage() {
         if (!ship) return;
 
         // UFO movement
-        const ufoHeight = ship.getBounds() ? ship.getBounds().height * ship.scale : 100 * ship.scale;
+        const ufoBounds = ship.getBounds();
+        const ufoWidth = ufoBounds ? ufoBounds.width * ship.scale : 100 * ship.scale;
+        const ufoHeight = ufoBounds ? ufoBounds.height * ship.scale : 100 * ship.scale;
+
+        // Vertcial movement
         if (moveUp && ship.y - ufoHeight / 2 > 0) ship.y -= 6;
         if (moveDown && ship.y + ufoHeight / 2 < stage.canvas.height - stage.canvas.height / 4) ship.y += 6;
+
+        // Horizontal movement
+        if (moveLeft && ship.x - ufoWidth / 2 > 0) ship.x -= 6;
+        if (moveRight && ship.x + ufoWidth / 2 < stage.canvas.width - stage.canvas.width / 4) ship.x += 6;
 
         // Asteroid movement and collision
         asteroids.forEach((asteroid) => {
