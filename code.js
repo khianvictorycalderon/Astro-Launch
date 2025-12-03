@@ -104,6 +104,9 @@ function overPage() {
     gameOverScreen.y = stage.canvas.height / 2.6125;
 }
 
+let score = 0;
+let scoreInterval;
+
 let gameTickHandler; // store reference to remove ticker safely
 let spawnTimeout;    // store reference to asteroid spawn timeout
 
@@ -124,6 +127,16 @@ function gamePage() {
     ship.y = stage.canvas.height / 2;
     ship.scale = 0.08;
     stage.addChild(ship);
+
+    // ================== INITIAL SCORE STEUP =================
+    // Reset score at the start of each game
+    score = 0;
+    if (scoreInterval) clearInterval(scoreInterval);
+
+    // Start counting score: 10 points per second
+    scoreInterval = setInterval(() => {
+        score += 1;
+    }, 1);
 
     // ================== KEYBOARD CONTROLS ==================
     function keyDownHandler(e) {
@@ -218,6 +231,12 @@ function gamePage() {
 
                     // Remove ticker for this game
                     createjs.Ticker.removeEventListener("tick", gameTickHandler);
+
+                    // Stop score counting
+                    clearInterval(scoreInterval);
+
+                    // Display final score on Game Over screen
+                    gameOverScreen.score.text = score;
 
                     // Show Game Over screen
                     overPage();
