@@ -50,6 +50,19 @@ function placeHomeScreen() {
     stage.addChild(homeScreen);
 }
 
+function generateAsteroid(
+    type, // Asteroid type of as_a, as_b, and so on
+    speed // Overtime, speed increases, not this speed, but the argument given so it looks like that every other asteroid generated is faster than the previous
+    // Generates asteroid outside of screen, then eventually moves from right to left
+    // As this is generated, rotation and speed are random, horinzontal movement only
+) {
+
+}
+
+function deleteAsteroid() {
+    // Deletes the asteroid when outside the screen
+}
+
 // ===================== PAGE FUNCTIONS =====================
 function homePage() {
     placeHomeScreen();
@@ -101,7 +114,7 @@ function gamePage() {
 
     window.addEventListener("keydown", keyDownHandler);
     window.addEventListener("keyup", keyUpHandler);
-
+1
     // ================= UFO MOVEMENT TICK =================
     createjs.Ticker.addEventListener("tick", () => {
         const ufoHeight = 100 * ship.scale; // manually set your UFO's pixel height, adjust if needed
