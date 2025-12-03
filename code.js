@@ -43,6 +43,10 @@ let ship = new lib.ufo;
  * If the player hits any asteroid, game over, removes all the asteroid and the ufo ship, and shows the game over screen in the middle of the screen with score shown, and when play again was clicked, then go to game page again
  */
 
+// Live scores (During game only) (Both are instances directly integrated into the stage)
+let liveScore = new lib.liveScore;
+let liveScoreLabel = new lib.liveScoreLabel;
+
 // ===================== UTILITY FUNCTIONS =====================
 function placeHomeScreen() {
     homeScreen.x = stage.canvas.width / 2.6125;
@@ -122,6 +126,15 @@ function gamePage() {
     gameOverScreen.playButton.removeEventListener("click");
     stage.removeChild(ship);
 
+    // Displays the live score
+    liveScore.x = 720;
+    liveScore.y = 50;
+    liveScoreLabel.x = 110;
+    liveScoreLabel.y = 50;
+    stage.addChild(liveScoreLabel);
+    stage.addChild(liveScore);
+    liveScore.text = "0"; // initialize score
+
     // Reset asteroids array and variables
     asteroids = [];
     let asteroidSpeed = 3; // starting speed
@@ -136,14 +149,16 @@ function gamePage() {
     ship.scale = 0.08;
     stage.addChild(ship);
 
-    // ================== INITIAL SCORE STEUP =================
+    // ================== INITIAL SCORE SETUP =================
     // Reset score at the start of each game
     score = 0;
+
     if (scoreInterval) clearInterval(scoreInterval);
 
     // Start counting score: 10 points per second
     scoreInterval = setInterval(() => {
-        score += 1;
+        score += 10; // 10 points per second
+        liveScore.text = score; // update live score display
     }, 1);
 
     // ================== KEYBOARD CONTROLS ==================
@@ -269,6 +284,10 @@ function gamePage() {
 
                     // Display final score on Game Over screen
                     gameOverScreen.score.text = score;
+
+                    // Hide live scoring
+                    stage.removeChild(liveScore);
+                    stage.removeChild(liveScoreLabel);
 
                     // Show Game Over screen
                     overPage();
