@@ -100,7 +100,7 @@ function overPage() {
     stage.addChild(gameOverScreen);
 
     // Center the game overs screen
-    gameOverScreen.x = stage.canvas.width / 2.6125;
+    gameOverScreen.x = stage.canvas.width / 2.125;
     gameOverScreen.y = stage.canvas.height / 2.6125;
 }
 
