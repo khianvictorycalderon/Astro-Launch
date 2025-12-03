@@ -51,17 +51,39 @@ function placeHomeScreen() {
 }
 
 function generateAsteroid(
-    type, // Asteroid type of as_a, as_b, and so on
-    speed // Overtime, speed increases, not this speed, but the argument given so it looks like that every other asteroid generated is faster than the previous
-    // Generates asteroid outside of screen, then eventually moves from right to left
-    // As this is generated, rotation and speed are random, horinzontal movement only
+    type, // Asteroid type: as_a, as_b, etc.
+    speed // horizontal speed of this asteroid
 ) {
+    let asteroid = new lib[type]();
 
+    // Set initial position outside the right edge of the screen
+    asteroid.x = stage.canvas.width + 50; // slightly outside
+    asteroid.y = Math.random() * (stage.canvas.height - 50); // random vertical position
+
+    // Speed (horizontal movement left) — use the passed parameter!
+    asteroid.speed = speed + Math.random() * 3; // add small random variation
+
+    // Rotation
+    asteroid.rotationSpeed = Math.random() * 5 - 2.5; // rotates -2.5 to 2.5 degrees per tick
+
+    // Add to stage and asteroids array
+    stage.addChild(asteroid);
+    asteroids.push(asteroid);
 }
 
-function deleteAsteroid() {
-    // Deletes the asteroid when outside the screen
+function deleteAsteroid(asteroid) {
+    if (!asteroid) return; // safety check
+
+    // Remove from stage
+    stage.removeChild(asteroid);
+
+    // Remove from array
+    const index = asteroids.indexOf(asteroid);
+    if (index > -1) {
+        asteroids.splice(index, 1);
+    }
 }
+
 
 // ===================== PAGE FUNCTIONS =====================
 function homePage() {
@@ -72,20 +94,38 @@ function homePage() {
     });
 }
 
+function overPage() {
+
+    // Add the game over screen
+    stage.addChild(gameOverScreen);
+
+    // Center the game overs screen
+    gameOverScreen.x = stage.canvas.width / 2.6125;
+    gameOverScreen.y = stage.canvas.height / 2.6125;
+}
+
+let gameTickHandler; // store reference to remove ticker safely
+let spawnTimeout;    // store reference to asteroid spawn timeout
+
 function gamePage() {
+    // Remove home screen and previous UFO
     stage.removeChild(homeScreen);
     homeScreen.playButton.removeEventListener("click");
+    stage.removeChild(ship);
 
-    // UFO position
+    // Reset asteroids array and variables
+    asteroids = [];
+    let asteroidSpeed = 3; // starting speed
+    let moveUp = false;
+    let moveDown = false;
+
+    // ================== UFO SETUP ==================
     ship.x = stage.canvas.width / 6;
     ship.y = stage.canvas.height / 2;
     ship.scale = 0.08;
     stage.addChild(ship);
 
-    // ================= KEYBOARD CONTROLS =================
-    let moveUp = false;
-    let moveDown = false;
-
+    // ================== KEYBOARD CONTROLS ==================
     function keyDownHandler(e) {
         switch (e.code) {
             case "ArrowUp":
@@ -114,25 +154,82 @@ function gamePage() {
 
     window.addEventListener("keydown", keyDownHandler);
     window.addEventListener("keyup", keyUpHandler);
-1
-    // ================= UFO MOVEMENT TICK =================
-    createjs.Ticker.addEventListener("tick", () => {
-        const ufoHeight = 100 * ship.scale; // manually set your UFO's pixel height, adjust if needed
 
-        if (moveUp && ship.y - ufoHeight / 2 > 0) {
-            ship.y -= 5; // speed
-        }
+    // ================== ASTEROID SPAWNING ==================
+    function spawnAsteroid() {
+        const types = ["as_a","as_b","as_c","as_d","as_e","as_f","as_g","as_h"];
+        const type = types[Math.floor(Math.random() * types.length)];
 
-        if (moveDown && ship.y + ufoHeight / 2 < stage.canvas.height - stage.canvas.height / 4) {
-            ship.y += 5; // speed
-        }
+        generateAsteroid(type, asteroidSpeed);
+
+        // Gradually increase speed for next asteroid
+        asteroidSpeed += 0.05;
+
+        // Schedule next spawn randomly (3-8 per 10 seconds)
+        const interval = 1250 + Math.random() * 1250; // 1.25s - 2.5s
+        spawnTimeout = setTimeout(spawnAsteroid, interval);
+    }
+
+    // Start spawning
+    clearTimeout(spawnTimeout);
+    spawnAsteroid();
+
+    // ================== GAME LOOP ==================
+    createjs.Ticker.framerate = 60; // optional for smooth movement
+
+    // Remove previous game tick handler safely
+    if (gameTickHandler) createjs.Ticker.removeEventListener("tick", gameTickHandler);
+
+    gameTickHandler = () => {
+        if (!ship) return;
+
+        // UFO movement
+        const ufoHeight = ship.getBounds() ? ship.getBounds().height * ship.scale : 100 * ship.scale;
+        if (moveUp && ship.y - ufoHeight / 2 > 0) ship.y -= 6;
+        if (moveDown && ship.y + ufoHeight / 2 < stage.canvas.height - stage.canvas.height / 4) ship.y += 6;
+
+        // Asteroid movement and collision
+        asteroids.forEach((asteroid) => {
+            asteroid.x -= asteroid.speed;
+            asteroid.rotation += asteroid.rotationSpeed;
+
+            // Delete if off-screen
+            if (asteroid.x + asteroid.getBounds().width < 0) {
+                deleteAsteroid(asteroid);
+            }
+
+            // Collision detection
+            const ufoBounds = ship.getTransformedBounds();
+            const asteroidBounds = asteroid.getTransformedBounds();
+            if (ufoBounds && asteroidBounds) {
+                if (
+                    ufoBounds.x < asteroidBounds.x + asteroidBounds.width &&
+                    ufoBounds.x + ufoBounds.width > asteroidBounds.x &&
+                    ufoBounds.y < asteroidBounds.y + asteroidBounds.height &&
+                    ufoBounds.y + ufoBounds.height > asteroidBounds.y
+                ) {
+                    // Collision happened
+                    asteroids.forEach(a => stage.removeChild(a));
+                    asteroids = [];
+                    stage.removeChild(ship);
+
+                    // Stop spawning asteroids
+                    clearTimeout(spawnTimeout);
+
+                    // Remove ticker for this game
+                    createjs.Ticker.removeEventListener("tick", gameTickHandler);
+
+                    // Show Game Over screen
+                    overPage();
+                }
+            }
+        });
 
         stage.update();
-    });
-}
+    };
 
-function overPage() {
-    stage.removeChild(ship);
+    // Start game loop
+    createjs.Ticker.addEventListener("tick", gameTickHandler);
 }
 
 // Call the initial page
