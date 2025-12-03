@@ -102,6 +102,10 @@ function overPage() {
     // Center the game overs screen
     gameOverScreen.x = stage.canvas.width / 2.125;
     gameOverScreen.y = stage.canvas.height / 2.6125;
+
+    gameOverScreen.playButton.addEventListener("click", () => {
+        gamePage();
+    })
 }
 
 let score = 0;
@@ -113,7 +117,9 @@ let spawnTimeout;    // store reference to asteroid spawn timeout
 function gamePage() {
     // Remove home screen and previous UFO
     stage.removeChild(homeScreen);
+    stage.removeChild(gameOverScreen);
     homeScreen.playButton.removeEventListener("click");
+    gameOverScreen.playButton.removeEventListener("click");
     stage.removeChild(ship);
 
     // Reset asteroids array and variables
