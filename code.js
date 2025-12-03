@@ -157,9 +157,9 @@ function gamePage() {
 
     // Start counting score: 10 points per second
     scoreInterval = setInterval(() => {
-        score += 10; // 10 points per second
+        score += 1; // 10 points per second
         liveScore.livescore.text = score; // update live score display
-    }, 1);
+    }, 10);
 
     // ================== KEYBOARD CONTROLS ==================
     function keyDownHandler(e) {
