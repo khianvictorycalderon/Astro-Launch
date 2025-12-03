@@ -31,18 +31,6 @@ let ship = new lib.ufo;
  *         8        |     as_h
  */
 
-// ===================== GAME MECHANICS =====================
-/* Initial page is the home page, when button was clicked, it goes to game page.
- * In the game page, a ufo is shown, approximately at the 1/4 of the screen hozitonally position
- * Player controls the ufo with up and down or "W" or "S" keys, both should work for compatibility
- * Asteroid is generated dynamically (at random position) at the right side of the screen (not visible to user)
- * Then those asteroids moves from right to left, the player avoids colliding with it
- * Score is counted as timer, 1 second, 10 score
- * Overtime, asteroid moves faster and faster (technically no limit) but not more frequent, frequency of generation is random of maybe 3 - 8 asteroids per 10 seconds, whatever, just enough for human pace
- * Asteroid also rotates (randomly) just whatever
- * If the player hits any asteroid, game over, removes all the asteroid and the ufo ship, and shows the game over screen in the middle of the screen with score shown, and when play again was clicked, then go to game page again
- */
-
 // Live scores (During game only) (Both are instances directly integrated into the stage)
 let liveScore = new lib.liveScore;
 let liveScoreLabel = new lib.liveScoreLabel;
@@ -208,23 +196,36 @@ function gamePage() {
     window.addEventListener("keyup", keyUpHandler);
 
     // ================== ASTEROID SPAWNING ==================
-    function spawnAsteroid() {
-        const types = ["as_a","as_b","as_c","as_d","as_e","as_f","as_g","as_h"];
-        const type = types[Math.floor(Math.random() * types.length)];
+    let startTime = Date.now();
+    let maxAsteroidsPerSecond = 20;
 
+    function spawnAsteroids() {
+        const types = ["as_a","as_b","as_c","as_d","as_e","as_f","as_g","as_h"];
+
+        // Calculate elapsed time in seconds
+        const elapsed = (Date.now() - startTime) / 1000;
+
+        // Aggressive ramp-up: exponential-ish increase
+        let asteroidsPerSecond = Math.min(maxAsteroidsPerSecond, 2 * Math.pow(1.05, elapsed));
+        // Starts at ~2/sec and doubles quickly
+
+        // Determine interval based on asteroids per second
+        const interval = 3000 / asteroidsPerSecond;
+
+        // Spawn 1 asteroid per call
+        const type = types[Math.floor(Math.random() * types.length)];
         generateAsteroid(type, asteroidSpeed);
 
-        // Gradually increase speed for next asteroid
+        // Gradually increase speed too
         asteroidSpeed += 0.05;
 
-        // Schedule next spawn randomly (3-8 per 10 seconds)
-        const interval = 1250 + Math.random() * 1250; // 1.25s - 2.5s
-        spawnTimeout = setTimeout(spawnAsteroid, interval);
+        // Schedule next spawn
+        spawnTimeout = setTimeout(spawnAsteroids, interval);
     }
 
     // Start spawning
     clearTimeout(spawnTimeout);
-    spawnAsteroid();
+    spawnAsteroids();
 
     // ================== GAME LOOP ==================
     createjs.Ticker.framerate = 60; // optional for smooth movement
